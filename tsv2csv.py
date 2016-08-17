@@ -1,9 +1,16 @@
 #!usr/local/bin/python
 
+import argparse
 import csv
+import sys
 
-with open('x.tsv','rb') as tsvin, open('x1.csv', 'wb') as csvout:
-    tsvin = csv.reader(tsvin, delimiter='\t')
-    csvf = csv.writer(csvout, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-    csvf.writerows(tsvin)
-## encodong issues, 
+parser = argparse.ArgumentParser("Converts a tsv file to a csv file.")
+
+parser.add_argument('tsv', nargs='?', type=argparse.FileType('rb'),
+                    default=sys.stdin, help="A tsv file to convert.")
+parser.add_argument('csv', nargs='?', type=argparse.FileType('wb'),
+                    default=sys.stdout, help="A csv file to output.")
+args = parser.parse_args()
+tsvin = csv.reader(args.tsv, delimiter='\t')
+csv_out = csv.writer(args.csv, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+csv_out.writerows(tsvin)
