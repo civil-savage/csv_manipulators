@@ -33,9 +33,9 @@ class csv_manip:
                     self.like_keys.append([j,x])
                     self.key_names.append([self.rows[0][j],o.rows[0][x]])
 
-    def write_csv(self, o, k):
-        with open('combo.csv', "wb") as combo:
-            combo_writer = csv.writer(combo)
+    def write_combo(self, o, k, n):
+        with open(n, "wb") as nf:
+            csv_out = csv.writer(nf)
             f = 0 #first row flag 
             for orow in o.rows:
                 for irow in self.rows:
@@ -43,17 +43,16 @@ class csv_manip:
                         f = 1 
                         for item in irow:
                             orow.append(item)
-                    elif orow[k[1]] == irow[k[0]]: #first item the same 
+                    elif irow[k[0]] == orow[k[1]]: #matching item
                         for item in irow:
                             orow.append(item)
-                combo_writer.writerow(orow)
+                csv_out.writerow(orow)
 
-        
-    def return_rows(self, o, keys):
+    def return_rows(self, o, k):
         like_rows = []
         for x in range(1,o.row_num):
             for y in range(1,self.row_num):
-                if o.rows[x][keys[1]] == self.rows[y][keys[0]]:
+                if self.rows[y][k[0]] == o.rows[x][k[1]]: 
                     like_rows.append([x,y])
         return like_rows
 
@@ -86,25 +85,36 @@ class csv_manip:
                         items[row[f]] = [csv_file]
                     else:
                         items[row[f]].append(csv_file)
-
-
         for item in items.keys():
             if len(items[item]) is not None:
                 out_str.append(item, items[item])
-
         return  out_str
-                
+
+    def delete_rows(self, r, f):
+        with open(f, "wb") as nf:
+            row_num = 0
+            csv_out = csv.writer(nf)
+            for row in self.rows:
+                if row_num not in r:
+                    print row
+                    csv_out.writerows(row)
+                row_num += 1
+            
+
+    def delete_cols(self, c):
+        pass
+    
 i = csv_manip("images_t.csv")
 d = csv_manip("data_t.csv")
 
-dups = i.dups("SKU", [d])
-print dups
+y = csv_manip("y.csv")
+y.delete_rows([1,2,3] , "d.csv")
 
 # i.csv2tsv("x.tsv")
 # x = csv_manip("x.tsv")
 # x.tsv2csv("y.csv")
 
 
-# i.find_keys(d)
-# i.write_csv(d,i.like_keys[0])
+i.find_keys(d)
+i.write_combo(d,i.like_keys[0],"combo.csv")
 
